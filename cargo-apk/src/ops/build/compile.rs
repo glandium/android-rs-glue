@@ -49,12 +49,12 @@ pub fn build_shared_libraries(
         fs::create_dir_all(&build_target_dir).unwrap();
 
         // Set environment variables needed for use with the cc crate
-        std::env::set_var("CC", util::find_clang(config, build_target)?);
-        std::env::set_var("CXX", util::find_clang_cpp(config, build_target)?);
-        std::env::set_var("AR", util::find_ar(config, build_target)?);
+        std::env::set_var(format!("CC_{}", build_target.rust_triple()), util::find_clang(config, build_target)?);
+        std::env::set_var(format!("CXX_{}", build_target.rust_triple()), util::find_clang_cpp(config, build_target)?);
+        std::env::set_var(format!("AR_{}", build_target.rust_triple()), util::find_ar(config, build_target)?);
 
         // Use libc++. It is current default C++ runtime
-        std::env::set_var("CXXSTDLIB", "c++");
+        std::env::set_var(format!("CXXSTDLIB_{}", build_target.rust_triple()), "c++");
 
         // Generate cmake toolchain and set environment variables to allow projects which use the cmake crate to build correctly
         let cmake_toolchain_path = write_cmake_toolchain(config, &build_target_dir, build_target)?;
